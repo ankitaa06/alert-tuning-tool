@@ -1,8 +1,8 @@
 
 import json
-import autoconfig
-import statsmodule
-import preprocess
+from . import autoconfig
+from . import statsmodule
+from . import preprocess
 import numpy as np
 import pandas as pd
 # dummy='abc'
@@ -23,7 +23,8 @@ def filter_result(g_data,prio,minCount,alphaTolerance):
     Returns
     -------
 
-    """amplePList = []
+    """
+    samplePList = []
     print('came here')
     for dat in g_data:
         r = dat
