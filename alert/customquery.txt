@@ -1,0 +1,35 @@
+let Picked="?";
+let ParamDimensionSet=iff(Picked startswith 'User','User',iff(Picked startswith 'Query','Query',iff(Picked startswith 'Flight','Flight',iff(Picked startswith 'Session','Session','INVALID'))));
+let ParamLengthDay=datetime_diff('Day',datetime(?), datetime_add('day',1,datetime(?)));
+let DatMetaAux=ScorecardBatchExtractor_Metadata
+| where CompletedTime >= datetime(?) and CompletedTime <= datetime_add('day',1,datetime(?)) 
+| where Vertical=='?'
+| where ExperimentStepType in ("AB", "Interleaving", "ExternalAB") // Excluding SeedFinder, etc.
+//| where ExperimentStepType in ("AB", "ExternalAB") // Excluding Interleaving, SeedFinder, etc.
+| where NumberLine !in ("","BuddyScorecard") // Excluding Buddy scorecards
+| where TriggerFilterFlag == "" // Excluding Trigger/Filter scorecards
+// | where (DataSource=="Intraday")==ParamIsIntraday
+;
+let DatMeta = DatMetaAux
+| project ExperimentName, ExperimentPlanId, ExperimentStepId, IsReverseExperiment, Vertical, ScorecardId
+| distinct *
+;
+let DatFlight = DatMetaAux 
+| project ExperimentStepId, ScorecardId, FlightName, TrafficAllocation 
+| distinct *
+;
+let DatMetric=ScorecardBatchExtractor_TreatmentControlPairs 
+| where CompletedTime >= datetime(?) and CompletedTime <= datetime_add('day',1,datetime(?)) 
+| where Metric == '?'
+| extend DimensionSetQuoted = strcat('"', DimensionSet, '"')
+| extend DimensionSetConverted=iff(dynamic(["RAWMUID", "User", "by user"]) contains DimensionSetQuoted,"User",iff(dynamic(["Query", "By query"]) contains DimensionSetQuoted,"Query",iff(dynamic(["Flight", "Page", "By page"]) contains DimensionSetQuoted,"Flight",iff( dynamic(["SESSION_ID_RAWMUID", "Session", "by session"]) contains DimensionSetQuoted,"Session","Other"))))
+| where DimensionSetConverted == ParamDimensionSet
+| join kind=inner (DatFlight|project ExperimentStepId, ScorecardId, FlightNameT=FlightName, TrafficAllocationT=TrafficAllocation) on ExperimentStepId, ScorecardId, FlightNameT
+| project-away ExperimentStepId1, ScorecardId1, FlightNameT1
+| join kind=inner (DatFlight|project ExperimentStepId, ScorecardId, FlightNameC=FlightName, TrafficAllocationC=TrafficAllocation) on ExperimentStepId, ScorecardId, FlightNameC
+| project-away ExperimentStepId1, ScorecardId1, FlightNameC1;
+DatMeta
+|join kind=inner DatMetric on ExperimentStepId, ScorecardId
+|project ExperimentName, ExperimentPlanId, ExperimentStepId, IsReverseExperiment, Vertical, ScorecardId, MetricName=Metric, RollupUnit=DimensionSet, FlightNameT, FlightNameC, FlightTypeT, FlightTypeC, SegmentName1, SegmentValue1, SegmentName2, SegmentValue2, AvgT, AvgC, StdDevT, StdDevC, NT, NC, UserCountT=NT, UserCountC=NC, TrafficT=TrafficAllocationT, TrafficC=TrafficAllocationC, Param_IsPositiveGood=True, Param_LengthDay=ParamLengthDay  
+|take ?
+  
