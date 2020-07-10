@@ -2,7 +2,7 @@ import scipy
 from scipy import stats
 import numpy as np
 import math
-import 
+import itertools
 
 def get_preprocessed_data(g_data,param,internalParam):
     """Set docstring here.

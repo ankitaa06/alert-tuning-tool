@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def poz(z):
     """Set docstring here.
 

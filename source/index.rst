@@ -15,6 +15,6 @@ Welcome to Alert-Tuning-Tool's documentation!
 Indices and tables
 ==================
 
-* :ref:`genindex`
+* :ref:`alert-tool-python-module`
 * :ref:`modindex`
 * :ref:`search`
