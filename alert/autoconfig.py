@@ -306,51 +306,51 @@ def ConfigureAlert(ppdrs, param, internalParam,isPositiveGood,priority):
         return alert range alongwith some other values
 
     """   
-    # Get independent rows
-        indPpdrs = GetIndependentRows(ppdrs)
-        # print('{0} independent rows'.format(len(indPpdrs)))
+# Get independent rows
+    indPpdrs = GetIndependentRows(ppdrs)
+    # print('{0} independent rows'.format(len(indPpdrs)))
 
-            # Set minCount
-    #         if (param["ReqCount"] is not None):
-    #             minCount = int(param.ReqCount)
-    #         else:
-    #             minCount = GetMinCount(indPpdrs, internalParam)
-        minCount = GetMinCount(indPpdrs, internalParam)
+        # Set minCount
+#         if (param["ReqCount"] is not None):
+#             minCount = int(param.ReqCount)
+#         else:
+#             minCount = GetMinCount(indPpdrs, internalParam)
+    minCount = GetMinCount(indPpdrs, internalParam)
 
-        # Eliminate abnormal points
-        cleanPpdrs = EliminateAbnormalPoints(indPpdrs, minCount, internalParam)
+    # Eliminate abnormal points
+    cleanPpdrs = EliminateAbnormalPoints(indPpdrs, minCount, internalParam)
 
-            # Set Priority and AlphaTolerance
-    #         priority = internalParam.DefaultPriority
-    #         if (param.Priority is not None):
-    #             priority = int(param.Priority)
-        alphaTolerance = internalParam["AlphaTolerance"][priority]
-    #         if (param.AlphaTolerance is not None):
-    #             alphaTolerance = float(param.AlphaTolerance)
-        sdFactor = internalParam["SdFactor"][priority]
+        # Set Priority and AlphaTolerance
+#         priority = internalParam.DefaultPriority
+#         if (param.Priority is not None):
+#             priority = int(param.Priority)
+    alphaTolerance = internalParam["AlphaTolerance"][priority]
+#         if (param.AlphaTolerance is not None):
+#             alphaTolerance = float(param.AlphaTolerance)
+    sdFactor = internalParam["SdFactor"][priority]
 
-        # Determine alert range
-        alertRange = GetAlertRange(
-            cleanPpdrs=cleanPpdrs,
-            isPositiveGood=isPositiveGood,
-            minCount=minCount,
-            sdFactor=sdFactor,
-            minRangeLimit=internalParam["MinRangeLimit"]
-        )
+    # Determine alert range
+    alertRange = GetAlertRange(
+        cleanPpdrs=cleanPpdrs,
+        isPositiveGood=isPositiveGood,
+        minCount=minCount,
+        sdFactor=sdFactor,
+        minRangeLimit=internalParam["MinRangeLimit"]
+    )
 
-    #         alertSetting = AlertSetting(
-    #             vertical=param.Vertical,
-    #             metricName=param.MetricName,
-    #             rollUpUnit=param.RollUpUnit,
-    #             priority=priority,
-    #             requiredCount=minCount,
-    #             alertRange=alertRange,
-    #             alphaTolerance=alphaTolerance
-    #         )
-    #         return alertSetting
-        alertRange["RequiredCount"] = minCount
-        alertRange["AlphaTolerance"] = alphaTolerance
-    
-        return alertRange
+#         alertSetting = AlertSetting(
+#             vertical=param.Vertical,
+#             metricName=param.MetricName,
+#             rollUpUnit=param.RollUpUnit,
+#             priority=priority,
+#             requiredCount=minCount,
+#             alertRange=alertRange,
+#             alphaTolerance=alphaTolerance
+#         )
+#         return alertSetting
+    alertRange["RequiredCount"] = minCount
+    alertRange["AlphaTolerance"] = alphaTolerance
+
+    return alertRange
 
     
