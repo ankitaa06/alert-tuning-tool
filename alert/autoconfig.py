@@ -9,11 +9,16 @@ def get_auto_config(param,internalParam,ppdrList):
 
     Parameters
     ----------
-    param: 
-    internalParam: 
-    ppdrList: 
-
+    param: dict, 
+        this is the user parameter like start date, enddate, vertical etc
+    internalParam: dict, 
+        this contains default values for many parameters 
+    ppdrList: llist,
+        its a list of preprocessed data
+    
     Returns
+        autoconfig_res: dict
+            its a dictionary of auto-config parameters on all priorities.
     -------
 
     """ 
@@ -59,19 +64,27 @@ def get_auto_config(param,internalParam,ppdrList):
 
     return autoconfig_res
 
-
+# Pick independent rows to see the distribution.
+# Currently getting one row (with the biggest Nsum) for each ScorecardId
+# When multiple rows have same Nsum, choose first SegmentValue1, SegmentValue2 in lexicographical order (expecting "**NONE**" to be picked)
+# It may be better to pick one row for each ExperimentStepId, as multiple scorecards from one ExperimentStepId are likely not independent from each other, but a concern is smaller sample size.
 
 def GetIndependentRows(ppdrs):
     """Set docstring here.
 
     Parameters
     ----------
-    ppdrs: 
+    ppdrs:list,
+        list of data which is preprocessed 
 
     Returns
     -------
+    indRows: list
+
+    
 
     """
+    # 
     indRows = []
     dat = [ppdr for ppdr in ppdrs if ppdr['FlightTypeC'] != 'StandardControl']
     dat = sorted(dat, key=lambda x: (x['ScorecardId'], -x['Nsum'], x['SegmentValue1'], x['SegmentValue2']))
@@ -85,8 +98,10 @@ def GetQuantile(dat, pct):
 
     Parameters
     ----------
-    dat: 
-    pct: 
+    dat: list
+        list of numbers to calculate quantile on
+    pct: float
+        percentage at which quantile must be calculated 
 
     Returns
     -------
@@ -98,16 +113,23 @@ def GetQuantile(dat, pct):
     return np.percentile(a, pct * 100)  # Default is linear interpolation
     # return np.percentile(a, pct * 100, interpolation='lower')
 
+
+# Get a N which is 5th(ReqCountPercentile) percentile of all Nmin 
 def GetMinCount(ippdrs, internalParam):
     """Set docstring here.
 
     Parameters
     ----------
-    ippdrs: 
-    internalParam: 
+    ippdrs: list
+        its a list of independent data rows
+    internalParam: dict
+        it was already defined in the tool as to set some of the default configurations 
+    
 
     Returns
     -------
+    minCount: int
+        it return a number which is ReqCountPercentile of all Nmin, where Nmin is min(NT,NC)
 
     """
     myList = [np.min([item['NT'], item['NC']]) for item in ippdrs]
@@ -123,14 +145,21 @@ def GetMinCount(ippdrs, internalParam):
         minCount = int(math.floor(int(float(minCount) / 1000) * 1000))
     return minCount
 
+# If the score card has deltaabs=0 and stderr = 0,Set zval=0, Else calculate zval as deltaabs/stderr
+# Now if the scorecards Nmin>=mincount and zval0<zTh then accept (this threshold in defined in initial parameter)
+
 def EliminateAbnormalPoints(ippdrs, minCount, internalParam):
     """Set docstring here.
 
     Parameters
     ----------
-    ippdrs: 
-    minCount: 
-    internalParam: 
+    ippdrs: list
+        list of independent data rows
+    minCount: int
+        number which is ReqCountPercentile of all Nmin, where Nmin is min(NT,NC)
+    internalParam: dict
+        it is defined in the tool as init parameters
+
 
     Returns
     -------
@@ -153,7 +182,8 @@ def Median(dat):
 
     Parameters
     ----------
-    dat: 
+    dat: list
+        its a list of numbers to calculate median of
 
     Returns
     -------
@@ -166,7 +196,9 @@ def Variance(dat):
 
     Parameters
     ----------
-    dat: 
+    dat: list
+        its a list of numbers to calculate variance of
+
 
     Returns
     -------
@@ -194,14 +226,23 @@ def GetAlertRange(cleanPpdrs, isPositiveGood, minCount, sdFactor, minRangeLimit)
 
     Parameters
     ----------
-    cleanPpdrs: 
-    isPositiveGood: 
-    minCount: 
-    sdFactor: 
-    minRangeLimit: 
+    cleanPpdrs: list
+        list of cleaned pre processsed data
+    isPositiveGood: Boolean
+        It defines the direction of movement of metric which is good
+    minCount: int
+        number which is ReqCountPercentile of all Nmin, where Nmin is min(NT,NC)
+        
+    sdFactor: float
+        a number to put weightage on the prioirties
+    minRangeLimit: float
+         Minimum allowed AlertRange
+
 
     Returns
     -------
+    AlertRange: dict
+        returns the auto alert configuartions on the passed data
 
     """
     absll = None
@@ -248,14 +289,21 @@ def ConfigureAlert(ppdrs, param, internalParam,isPositiveGood,priority):
 
     Parameters
     ----------
-    ppdrs: 
-    param: 
-    internalParam: 
-    isPositiveGood: 
-    priority: 
+    ppdrs: list
+        list of preprocessed data
+    param: dict
+        dict of user passed parameters
+    internalParam: dict
+        dict of init parameters
+    isPositiveGood: bool
+        value indicating which side of the metric movement is good 
+    priority: int
+        prioirty at which auto configs need to occu
 
     Returns
     -------
+    alertRange: dict
+        return alert range alongwith some other values
 
     """   
     # Get independent rows

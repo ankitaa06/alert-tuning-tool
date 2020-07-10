@@ -5,7 +5,7 @@ def poz(z):
 
     Parameters
     ----------
-    z: 
+    z: float
 
     Returns
     -------
@@ -47,8 +47,9 @@ def get_QVal(g_data,prio):
 
     Parameters
     ----------
-    g_data: 
-    prio: 
+    g_data: list
+        data at which qvalue must be calculated
+    prio: int
 
     Returns
     -------
@@ -79,8 +80,8 @@ def calcQValue(data, prio):
 
     Parameters
     ----------
-    data: 
-    prio: 
+    data: list
+    prio: int
 
     Returns
     -------
@@ -156,14 +157,14 @@ def calcPValue(g_data,absRangeLower,absRangeUpper,ratioRangeLower,ratioRangeUppe
 
     Parameters
     ----------
-    g_data: 
-    absRangeLower: 
-    absRangeUpper: 
-    ratioRangeLower: 
-    ratioRangeUpper: 
-    minCount: 
-    alphaTolerance: 
-    prio: 
+    g_data: list
+    absRangeLower: float
+    absRangeUpper: float
+    ratioRangeLower: float
+    ratioRangeUpper: float
+    minCount: int
+    alphaTolerance: float
+    prio: int
 
     Returns
     -------
@@ -229,13 +230,18 @@ def filter_result(g_data,prio,minCount,alphaTolerance):
 
     Parameters
     ----------
-    g_data: 
-    prio: 
-    minCount: 
-    alphaTolerance: 
+    g_data: list
+        the preprocessed data on which filtering is happening based on pval and qval calculations
+    prio: int
+        alert prioirty  
+    minCount: int
+        number which is ReqCountPercentile of all Nmin, where Nmin is min(NT,NC)
+    alphaTolerance: float
 
     Returns
     -------
+    samplePList :list
+        returns the final result as list of data rows
 
     """
     samplePList = []

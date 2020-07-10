@@ -9,12 +9,17 @@ def get_preprocessed_data(g_data,param,internalParam):
 
     Parameters
     ----------
-    g_data: 
-    param: 
-    internalParam: 
+    g_data: list
+        raw data as obtained after justo query
+    param: dict
+        dict of user parameters
+    internalParam: dict
+        dict of init parameters
 
     Returns
     -------
+    ppdrList:list
+        list of preprocessed data
 
     """
     g_data = create_new_cols(g_data)
@@ -28,10 +33,13 @@ def create_new_cols(g_data):
 
     Parameters
     ----------
-    g_data: 
+    g_data: list
+        raw data as obtained after justo query
 
     Returns
     -------
+    g_data: list
+        data with new added columns after calculation done on exisiting cols
 
     """
     import numpy as np
@@ -69,13 +77,16 @@ def PreProcessData(drs, param, internalParam):
 
     Parameters
     ----------
-    drs: 
-    param: 
-    internalParam: 
+    drs: list
+        raw data to be preprocessed
+
+    param: dict
+    internalParam: dict
 
     Returns
     -------
-
+    ppdrList:list
+        list of preprocessed data
     """
     ppdrList = []
     drsFiltered = [dr for dr in drs if (

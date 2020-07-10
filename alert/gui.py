@@ -15,15 +15,21 @@ def filter_result(g_data,prio,minCount,alphaTolerance):
 
     Parameters
     ----------
-    g_data: 
-    prio: 
-    minCount: 
-    alphaTolerance: 
+    g_data: list
+        the preprocessed data on which filtering is happening based on pval and qval calculations
+    prio: int
+        alert prioirty  
+    minCount: int
+        number which is ReqCountPercentile of all Nmin, where Nmin is min(NT,NC)
+    alphaTolerance: float
 
     Returns
     -------
+    samplePList :list
+        returns the final result as list of data rows
 
-    """amplePList = []
+    """
+    samplePList = []
     print('came here')
     for dat in g_data:
         r = dat
@@ -61,7 +67,6 @@ def form(widget1,Layout):
 
         Parameters
         ----------
-        'StartDate': 
 
         Returns
         -------
@@ -153,12 +158,12 @@ def form(widget1,Layout):
     display(btn)
     create_new_cell('#execute this after prompt\ngui.displayAutoConfigTables(widgets,Layout)')
 
+# this function is to display all the auto-configs(p0,p1,p2) together
 def displayAutoConfigTables(widget1,Layout):
     """Set docstring here.
 
         Parameters
         ----------
-        'P0': 
 
         Returns
         -------
@@ -173,6 +178,7 @@ def displayAutoConfigTables(widget1,Layout):
     display_auto_config_prio2(alertSetting,widget1,Layout,2)
     # create_new_cell('#execute this after seeing the table above\ngui.displayLastResults()')
 
+# this function created new cell in jupyetr notebook
 def create_new_cell(contents):
     """Set docstring here.
 
@@ -193,15 +199,13 @@ def create_new_cell(contents):
     )
     shell.payload_manager.write_payload(payload, single=False)
 
+
+# this function is to display auto configration table for P0
 def display_auto_config_prio0(alertSettings_dict,widgets,Layout,prio):
     """Set docstring here.
 
     Parameters
     ----------
-    alertSettings_dict: 
-    widgets: 
-    Layout: 
-    prio: 
 
     Returns
     -------
@@ -295,7 +299,7 @@ def display_auto_config_prio0(alertSettings_dict,widgets,Layout,prio):
     
     display(final_box_p0)
     
-
+# this function is to display auto configration table for P1
 def display_auto_config_prio1(alertSettings_dict,widgets,Layout,prio):
     """Set docstring here.
 
@@ -406,7 +410,8 @@ def display_auto_config_prio1(alertSettings_dict,widgets,Layout,prio):
     
     display(final_box_p1)
     # display(bt4_p1)
-    
+
+# this function is to display auto configration table for P2    
 def display_auto_config_prio2(alertSettings_dict,widgets,Layout,prio):
     """Set docstring here.
 
@@ -513,22 +518,28 @@ def display_auto_config_prio2(alertSettings_dict,widgets,Layout,prio):
     
 
 
-
-
+# TODO: add validation on nRes
+# this function accepts user parameters and converts it into a kusto query
 def make_query(start_date,end_date,vertical,metric,nRes,rollupUnit):
     """Set docstring here.
 
     Parameters
     ----------
-    start_date: 
-    end_date: 
-    vertical: 
-    metric: 
-    nRes: 
-    rollupUnit: 
+    start_date: datetime
+        start date of scorecard 
+    end_date: datetime
+        end date of scorecard
+    vertical: string
+    metric: string
+        internal metric name in the system
+    nRes: int
+        number of rows go quert
+    rollupUnit: string
 
     Returns
     -------
+    q: string
+        query string
 
     """
     with open('customquery.txt') as f:
@@ -554,16 +565,19 @@ def make_query(start_date,end_date,vertical,metric,nRes,rollupUnit):
     return q
 
 
-
+# this functions makes the kusto call and return the result
 def execute_query(q):
     """Set docstring here.
 
     Parameters
     ----------
-    q: 
+    q: string
+        kusto query
 
     Returns
     -------
+    response: Kusto Object
+        returns response as obtained from kusto
 
     """
     from azure.kusto.data.request import KustoClient, KustoConnectionStringBuilder
