@@ -31,7 +31,7 @@ if __name__ == "__main__":
         include_package_data=True,
 
         install_requires=[
-            'numpy', 'pandas', 'scipy','ipython'
+            'numpy', 'pandas', 'scipy','jupyter'
         ],
         extras_require={
             'docs': [
