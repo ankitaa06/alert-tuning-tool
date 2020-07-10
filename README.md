@@ -2,10 +2,7 @@
 
 # Alert Tuning Tool
 The Alert Tuning Tool helps you understand the effect of changes in specific metrics. It allows you to query the Kusto database for scorecards.....
-
-## Code Design:
-ChemBDDB is developed in the Python 3 programming language and uses MySQL, Flask to set up a SQL database using pymysql. It uses OpenBabel and its Python extension, Pybel for handling molecules. The development follows a strictly modular and object-oriented design to make the overall code as flexible and versatile as possible. 
-
+ 
 ## Documentation:
 Alert-tuning-tool documentation can be found here https://alert-tuning-tool.readthedocs.io/en/latest/index.html
 
